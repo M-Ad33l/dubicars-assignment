@@ -4,6 +4,7 @@ namespace TourSorter\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 use TourSorter\BoardSorter;
+use TourSorter\SortingFailure;
 
 class SortingTest extends TestCase
 {
@@ -20,10 +21,11 @@ class SortingTest extends TestCase
      */
     public function testGivenOneBoardingCardReturnIt()
     {
-        $boardCard = [
-            'origin' => 'alpha',
-            'destination' => 'delta',
-        ];
+        $boardCard = \TourSorter\Cards\AirportBus::createFrom(
+            'Orio',
+            'Beta',
+            '43C'
+        );
 
         $sortedBoardCards = $this->sorting->sort([$boardCard]);
         static::assertEquals([$boardCard], $sortedBoardCards);
@@ -43,15 +45,17 @@ class SortingTest extends TestCase
      */
     public function testGivenAListWithTwoSortedBoardCardsShouldReturnTheList()
     {
-        $firstBoardCard = [
-            'origin' => 'alpha',
-            'destination' => 'beta',
-        ];
+        $firstBoardCard = \TourSorter\Cards\AirportBus::createFrom(
+            'Orio',
+            'Beta',
+            '43C'
+        );
 
-        $secondBoardCard = [
-            'origin' => 'delta',
-            'destination' => 'gamma',
-        ];
+        $secondBoardCard = \TourSorter\Cards\AirportBus::createFrom(
+            'Beta',
+            'Gamma',
+            '43C'
+        );
 
         $sortedBoardCards = $this->sorting->sort([$firstBoardCard, $secondBoardCard]);
         static::assertEquals([$firstBoardCard, $secondBoardCard], $sortedBoardCards);
@@ -62,20 +66,22 @@ class SortingTest extends TestCase
      */
     public function testGivenAListWithThreeSortedBoardCardsShouldReturnTheList()
     {
-        $firstBoardCard = [
-            'origin' => 'orio',
-            'destination' => 'delta',
-        ];
+        $firstBoardCard = \TourSorter\Cards\AirportBus::createFrom(
+            'Orio',
+            'Beta',
+            '43C'
+        );
 
-        $secondBoardCard = [
-            'origin' => 'delta',
-            'destination' => 'gamma',
-        ];
-
-        $thirdBoardCard = [
-            'origin' => 'gamma',
-            'destination' => 'Rome',
-        ];
+        $secondBoardCard = \TourSorter\Cards\AirportBus::createFrom(
+            'Beta',
+            'Gamma',
+            '43C'
+        );
+        $thirdBoardCard = \TourSorter\Cards\AirportBus::createFrom(
+            'Gamma',
+            'Alpha',
+            '43C'
+        );
 
         $boardCards = [$firstBoardCard, $secondBoardCard, $thirdBoardCard];
         $sortedBoardCards = $this->sorting->sort($boardCards);
@@ -87,25 +93,91 @@ class SortingTest extends TestCase
      */
     public function testGivenAListWithThreeBoardCardsInInverseOrderShouldReturnTheListSorted()
     {
-        $firstBoardCard = [
-            'origin' => 'orio',
-            'destination' => 'delta',
-        ];
+        $firstBoardCard = \TourSorter\Cards\AirportBus::createFrom(
+            'Orio',
+            'Beta',
+            '43C'
+        );
 
-        $secondBoardCard = [
-            'origin' => 'delta',
-            'destination' => 'gamma',
-        ];
-
-        $thirdBoardCard = [
-            'origin' => 'gamma',
-            'destination' => 'Rome',
-        ];
+        $secondBoardCard = \TourSorter\Cards\AirportBus::createFrom(
+            'Beta',
+            'Gamma',
+            '43C'
+        );
+        $thirdBoardCard = \TourSorter\Cards\AirportBus::createFrom(
+            'Gamma',
+            'Alpha',
+            '43C'
+        );
 
         $boardCards = [$firstBoardCard, $secondBoardCard, $thirdBoardCard];
         $sortedBoardCards = $this->sorting->sort(array_reverse($boardCards));
         static::assertEquals($boardCards, $sortedBoardCards);
     }
 
+    /**
+     * given a list with three board cards in random order should return the list sorted
+     */
+    public function testGivenAListWithThreeBoardCardsInRandomOrderShouldReturnTheListSorted()
+    {
+        $firstBoardCard = \TourSorter\Cards\AirportBus::createFrom(
+            'Orio',
+            'Beta',
+            '43C'
+        );
 
+        $secondBoardCard = \TourSorter\Cards\AirportBus::createFrom(
+            'Beta',
+            'Gamma',
+            '43C'
+        );
+        $thirdBoardCard = \TourSorter\Cards\AirportBus::createFrom(
+            'Gamma',
+            'Alpha',
+            '43C'
+        );
+
+        $boardCards = [$firstBoardCard, $secondBoardCard, $thirdBoardCard];
+        $clonedList = $boardCards;
+        shuffle($clonedList);
+        $sortedBoardCards = $this->sorting->sort($clonedList);
+        static::assertEquals($boardCards, $sortedBoardCards);
+    }
+
+    /**
+     * given a invalid trip list throw an exception
+     *
+     */
+    public function testGivenAInvalidTripListThrowAnException()
+    {
+        $firstBoardCard = \TourSorter\Cards\AirportBus::createFrom(
+            'Orio',
+            'Beta',
+            '43C'
+        );
+
+        $secondBoardCard = \TourSorter\Cards\AirportBus::createFrom(
+            'Beta',
+            'Gamma',
+            '43C'
+        );
+        $thirdBoardCard = \TourSorter\Cards\AirportBus::createFrom(
+            'Gamma',
+            'Alpha',
+            '43C'
+        );
+        $fourthBoardCard = \TourSorter\Cards\AirportBus::createFrom(
+            'Alpha',
+            'Orio',
+            '43C'
+        );
+
+        $boardCards = [$firstBoardCard, $secondBoardCard, $thirdBoardCard, $fourthBoardCard];
+        $clonedList = $boardCards;
+        shuffle($clonedList);
+
+        $this->expectException(SortingFailure::class);
+        $this->expectExceptionMessage('Error calculating tour');
+        $this->sorting->sort($clonedList);
+    }
 }
