@@ -22,7 +22,7 @@ class SortingTest extends TestCase
     {
         $boardCard = [
             'origin' => 'alpha',
-            'destination' => 'Barcelona',
+            'destination' => 'delta',
         ];
 
         $sortedBoardCards = $this->sorting->sort([$boardCard]);
@@ -49,12 +49,63 @@ class SortingTest extends TestCase
         ];
 
         $secondBoardCard = [
-            'origin' => 'Barcelona',
+            'origin' => 'delta',
             'destination' => 'gamma',
         ];
 
         $sortedBoardCards = $this->sorting->sort([$firstBoardCard, $secondBoardCard]);
         static::assertEquals([$firstBoardCard, $secondBoardCard], $sortedBoardCards);
     }
+
+    /**
+     * given a list with three sorted board cards should return the list
+     */
+    public function testGivenAListWithThreeSortedBoardCardsShouldReturnTheList()
+    {
+        $firstBoardCard = [
+            'origin' => 'orio',
+            'destination' => 'delta',
+        ];
+
+        $secondBoardCard = [
+            'origin' => 'delta',
+            'destination' => 'gamma',
+        ];
+
+        $thirdBoardCard = [
+            'origin' => 'gamma',
+            'destination' => 'Rome',
+        ];
+
+        $boardCards = [$firstBoardCard, $secondBoardCard, $thirdBoardCard];
+        $sortedBoardCards = $this->sorting->sort($boardCards);
+        static::assertEquals($boardCards, $sortedBoardCards);
+    }
+
+    /**
+     * given a list with three board cards in inverse order should return the list sorted
+     */
+    public function testGivenAListWithThreeBoardCardsInInverseOrderShouldReturnTheListSorted()
+    {
+        $firstBoardCard = [
+            'origin' => 'orio',
+            'destination' => 'delta',
+        ];
+
+        $secondBoardCard = [
+            'origin' => 'delta',
+            'destination' => 'gamma',
+        ];
+
+        $thirdBoardCard = [
+            'origin' => 'gamma',
+            'destination' => 'Rome',
+        ];
+
+        $boardCards = [$firstBoardCard, $secondBoardCard, $thirdBoardCard];
+        $sortedBoardCards = $this->sorting->sort(array_reverse($boardCards));
+        static::assertEquals($boardCards, $sortedBoardCards);
+    }
+
 
 }
